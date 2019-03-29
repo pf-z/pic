@@ -441,6 +441,55 @@ Training error : 0.130062
 </code></pre>
 
 <p>可以看出支持向量的类型为分类任务，且惩罚因子C为1，共有7037个支持向量。</p>
+
+<p>然后进行预测并评估模型性能</p>
+
+<pre><code>&gt; letters_pre &lt;- predict(letters_model, letters_test)
+&gt; prop.table(table(letters_pre == letters_test$letter))
+
+  FALSE    TRUE 
+0.16075 0.83925 
+</code></pre>
+
+<p>正确率大概为84%，还是不错的。再试着提升一下模型性能。</p>
+
+<h3>4.3 提升模型性能</h3>
+
+<p>提升模型性能主要是通过更换核函数来实现，我们分别试一下常见的核函数，如下</p>
+
+<pre><code>&gt; letters_model &lt;- ksvm(letter ~ ., data = letters_train, kernel = &quot;rbfdot&quot;)
+&gt; letters_pre &lt;- predict(letters_model, letters_test)
+&gt; prop.table(table(letters_pre == letters_test$letter))
+
+ FALSE   TRUE 
+0.0695 0.9305 
+&gt; letters_model &lt;- ksvm(letter ~ ., data = letters_train, kernel = &quot;polydot&quot;)
+ Setting default kernel parameters  
+&gt; letters_pre &lt;- predict(letters_model, letters_test)
+&gt; prop.table(table(letters_pre == letters_test$letter))
+
+  FALSE    TRUE 
+0.16075 0.83925 
+&gt; letters_model &lt;- ksvm(letter ~ ., data = letters_train, kernel = &quot;tanhdot&quot;)
+ Setting default kernel parameters  
+&gt; letters_pre &lt;- predict(letters_model, letters_test)
+&gt; prop.table(table(letters_pre == letters_test$letter))
+
+ FALSE   TRUE 
+0.9155 0.0845 
+</code></pre>
+
+<p>可见，当核函数为径向基函数时性能最好，相反，当核函数为双曲正切函数时性能最差。</p>
+
+<p>全文完！</p>
+
+<h6>参考文献</h6>
+
+<ol>
+<li>Introduction to statistical machine learning.</li>
+<li>Machine Learning With R.</li>
+<li><a href="https://www.analyticsvidhya.com/blog/2017/09/understaing-support-vector-machine-example-code/">https://www.analyticsvidhya.com/blog/2017/09/understaing-support-vector-machine-example-code/</a></li>
+</ol>
 </article>
                 <section class="author" style="font-family:NSimSun">
                     <div class="avatar" style="background-image: url(https://cdn.nlark.com/yuque/0/2019/png/257195/1553165955055-avatar/c642b3f3-acf0-44b7-a81f-5dd21f1d1432.png?x-oss-process=image/resize,m_fill,w_192,h_192/format,png);"></div>
