@@ -67,10 +67,10 @@
 </script>
 
 
-        <meta name="keywords" content="一晌贪欢,">
-        <meta name="description" content="醉长安">
+        <meta name="keywords" content="Java Core,">
+        <meta name="description" content="对前面多线程基础的总结">
         <meta name="author" content="林奕清">
-        <title>醉长安</title>
+        <title>对前面多线程基础的总结</title>
     </head>
     <body>
         <article class="container">
@@ -87,24 +87,38 @@
 </header>
 
             <article class="main article">
-                <h1 class="title" style="font-family:KaiTi">醉长安</h1>
+                <h1 class="title" style="font-family:KaiTi">对前面多线程基础的总结</h1>
                 <section class="info" style="font-family:KaiTi">
                     <span class="avatar" style="background-image: url(https://cdn.nlark.com/yuque/0/2019/png/257195/1555147780483-avatar/550c911e-e363-49b7-8d65-21edddf99a07.png?x-oss-process=image/resize,m_fill,w_192,h_192/format,png);"></span>
                     <a class="name" href="/about.me.html">林奕清</a>
                     
-                    <span class="date" data-time="1479825683"><span class="from"></span></span>
+                    <span class="date" data-time="1545387765"><span class="from"></span></span>
                     
-                    <span class="tags"><a class="tag" href="/tag/%e4%b8%80%e6%99%8c%e8%b4%aa%e6%ac%a2/index.html">一晌贪欢</a></span>
+                    <span class="tags"><a class="tag" href="/tag/Java%20Core/index.html">Java Core</a></span>
                 </section>
-                <article class="content" style="font-family:KaiTi"><p>巍巍秦岭钟南山,浩浩八水绕长安。</p>
+                <article class="content" style="font-family:KaiTi"><p>对共享变量的操作有三种方式：</p>
 
-<p>初雪晚来秋亦晚,一叶止秋夜至冬。</p>
+<ul>
+<li>多线程不同runnable实例类变量实现，通过类变量实现多线程对不同runnable实例间共享变量的操作</li>
+<li>多线程相同runnable实例成员变量实现，通过相同runnable实例实现多线程对共享变量的操作</li>
+<li>多线程相同类实例成员变量实现，通过相同类实例多线程调用类实例方法实现多线程对共享变量的操作</li>
+</ul>
 
-<p>北风萧萧惊留鸟,柳絮翩翩漫秦城。</p>
+<p>但是对共享变量的操作会存在线程安全问题，通过加锁可以解决，那么线程安全的对共享变量的操作三种方式如下</p>
 
-<p>空闻胡琴弹古调,只道长安醉今宵。</p>
+<ul>
+<li>多线程不同runnable实例类变量实现，通过类变量实现多线程对不同runnable实例间共享变量的操作，加锁实现线程安全</li>
+<li>多线程相同runnable实例成员变量实现，通过相同runnable实例实现多线程对共享变量的操作，加锁实现线程安全</li>
+<li>多线程相同类实例成员变量实现，通过相同类实例多线程调用类实例方法实现多线程对共享变量的操作，加锁实现线程安全</li>
+</ul>
 
-<p>农历丙申年十月二十三日作于渭水</p>
+<p>以上涉及的是多线程对共享变量的同类型操作，不会涉及到线程间的通信，如果是多线程对共享变量的不同类型的操作，那么就要涉及到线程间的通信，比如典型的生产者与消费者问题，生产队列为空那么就无法消费，生产队列为满，那么无法生产。</p>
+
+<p>假定有两个线程，分别是生产线程与消费线程，那么二者就需要通信，用第三种对共享变量操作的方法更好，共享变量就是队列，通过将操作抽象为一个共享成员与两个队共享成员操作的方法，分别是生产与消费，那么生产者线程与消费者线程分别使用相同的类实例，一个调用生产方法，一个调用消费方法即可</p>
+
+<p>如果生产者有多个线程，那么也需要调度，notifyAll与while、wait。</p>
+
+<p>如果多线程不涉及对共享资源的操作，那么就不存在线程安全问题，可能也不需要通信，但是如果线程间有依赖关系(比如生产者消费者问题)，那么必然需要线程间通信(调度)，通过Thread的相关API调度，一个线程阻塞另一个线程运行并相互通知，那么肯定是第三种方法更好。</p>
 </article>
                 <section class="author" style="font-family:NSimSun">
                     <div class="avatar" style="background-image: url(https://cdn.nlark.com/yuque/0/2019/png/257195/1555147780483-avatar/550c911e-e363-49b7-8d65-21edddf99a07.png?x-oss-process=image/resize,m_fill,w_192,h_192/format,png);"></div>
@@ -115,13 +129,13 @@
                     
                     <section class="nav prev more">
                         <div class="head">上篇文章</div>
-                        <a class="link" href="/a-domestic-masterpiece-of-conscientious-suspicious-reasoning.html">《清明上河图密码》一部良心的国产悬疑推理大作</a>
+                        <a class="link" href="/cache-model-and-java-memory-model-and-volatile-keyword.html">Cache模型与Java内存模型及volatile关键字</a>
                     </section>
                     
                     
                     <section class="nav next more">
                         <div class="head">下篇文章</div>
-                        <a class="link" href="/love-reminiscences.html">诉衷情</a>
+                        <a class="link" href="/capturing-thread-runtime-exception-information-and-injecting-hook-threads.html">捕获线程运行时异常信息与注入钩子线程</a>
                     </section>
                     
                 </section>

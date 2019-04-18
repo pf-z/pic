@@ -67,10 +67,10 @@
 </script>
 
 
-        <meta name="keywords" content="一晌贪欢,">
-        <meta name="description" content="醉长安">
+        <meta name="keywords" content="Java Core,">
+        <meta name="description" content="深入理解Thread类构造函数">
         <meta name="author" content="林奕清">
-        <title>醉长安</title>
+        <title>深入理解Thread类构造函数</title>
     </head>
     <body>
         <article class="container">
@@ -87,24 +87,146 @@
 </header>
 
             <article class="main article">
-                <h1 class="title" style="font-family:KaiTi">醉长安</h1>
+                <h1 class="title" style="font-family:KaiTi">深入理解Thread类构造函数</h1>
                 <section class="info" style="font-family:KaiTi">
                     <span class="avatar" style="background-image: url(https://cdn.nlark.com/yuque/0/2019/png/257195/1555147780483-avatar/550c911e-e363-49b7-8d65-21edddf99a07.png?x-oss-process=image/resize,m_fill,w_192,h_192/format,png);"></span>
                     <a class="name" href="/about.me.html">林奕清</a>
                     
-                    <span class="date" data-time="1479825683"><span class="from"></span></span>
+                    <span class="date" data-time="1545208153"><span class="from"></span></span>
                     
-                    <span class="tags"><a class="tag" href="/tag/%e4%b8%80%e6%99%8c%e8%b4%aa%e6%ac%a2/index.html">一晌贪欢</a></span>
+                    <span class="tags"><a class="tag" href="/tag/Java%20Core/index.html">Java Core</a></span>
                 </section>
-                <article class="content" style="font-family:KaiTi"><p>巍巍秦岭钟南山,浩浩八水绕长安。</p>
+                <article class="content" style="font-family:KaiTi"><h2>一、线程的名称</h2>
 
-<p>初雪晚来秋亦晚,一叶止秋夜至冬。</p>
+<p>线程可以通过当前线程的getName()方法获取该线程在运行期间唯一的名称，如下</p>
 
-<p>北风萧萧惊留鸟,柳絮翩翩漫秦城。</p>
+<pre><code>public class TestMain {
 
-<p>空闻胡琴弹古调,只道长安醉今宵。</p>
+    public static void main(String[] args) {
+        System.out.println(Thread.currentThread().getName());
+        for (int i = 0; i &lt; 3; i++) {
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println(Thread.currentThread().getName());
+                }
+            });
+            thread.start();
+        }
+    }
+}
+</code></pre>
 
-<p>农历丙申年十月二十三日作于渭水</p>
+<p>我们启动了三个线程，线程的逻辑写在run方法之内，目的是输出线程name，输出为</p>
+
+<pre><code>main
+Thread-0
+Thread-1
+Thread-2
+</code></pre>
+
+<p>getId()方法也可以获得线程的Id，与getName使用方法一样</p>
+
+<h2>二、线程的命名</h2>
+
+<p>我们也可以自定义线程的名称，这便于我们监控线程的执行状态和排错，方法就是在Thread类的第二个参数设置名称，在run方法内通过Thread.currentThread()方法来获取，如下</p>
+
+<pre><code>public class TestMain {
+
+    public static void main(String[] args) {
+        System.out.println(Thread.currentThread().getName());
+        for (int i = 0; i &lt; 3; i++) {
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println(Thread.currentThread());
+                }
+            },&quot;My Thead-&quot; + i);
+            thread.start();
+        }
+    }
+}
+</code></pre>
+
+<p>输出为</p>
+
+<pre><code>main
+Thread[My Thead-0,5,main]
+Thread[My Thead-1,5,main]
+Thread[My Thead-2,5,main]
+</code></pre>
+
+<p>该构造方法的原型为</p>
+
+<pre><code>Thread(Runnable target, String name)
+</code></pre>
+
+<h2>三、线程的重新命名</h2>
+
+<p>线程在run之前，还可以修改线程名称，即new之后run之前还可以修改，方式为Thread.setName()方法，这是最后一次修改机会，线程在运行时是不能修改名称的，如下</p>
+
+<pre><code>public class TestMain {
+
+    public static void main(String[] args) {
+        System.out.println(Thread.currentThread().getName());
+        for (int i = 0; i &lt; 3; i++) {
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println(Thread.currentThread());
+                }
+            },&quot;My Thead-&quot; + i);
+            //thread.setName(&quot;Your Thread+&quot; + i);
+            thread.start();
+            thread.setName(&quot;Your Thread+&quot; + i);
+        }
+    }
+}
+</code></pre>
+
+<p>输出为</p>
+
+<pre><code>main
+Thread[Your Thread+0,5,main]
+Thread[Your Thread+1,5,main]
+Thread[Your Thread+2,5,main]
+</code></pre>
+
+<h2>四、Thread与ThreadGroup</h2>
+
+<p>在Thread的构造函数中，可以显式的指定线程的Group，如果没有显式的指定Group那么该线程就会被假如父线程的Group，Thread设置Group的构造方法为</p>
+
+<pre><code>Thread(ThreadGroup group, String name)
+Thread(ThreadGroup group, Runnable target, String name)
+Thread(ThreadGroup group, Runnable target, String name, long stackSize)
+</code></pre>
+
+<p>ThreadGroup的构造方法为</p>
+
+<pre><code>ThreadGroup group = new ThreadGroup(String groupName)
+</code></pre>
+
+<p>测试一下</p>
+
+<pre><code>public class TestMain {
+
+    public static void main(String[] args) {
+        Thread t1 = new Thread(&quot;t1&quot;);
+        ThreadGroup group = new ThreadGroup(&quot;My Group&quot;);
+        Thread t2 = new Thread(group, &quot;t2&quot;);
+        System.out.println(t1.getThreadGroup());    //java.lang.ThreadGroup[name=main,maxpri=10]
+        System.out.println(t2.getThreadGroup());    //java.lang.ThreadGroup[name=My Group,maxpri=10]
+        System.out.println(t1.getThreadGroup() == group);   //false
+        System.out.println(t2.getThreadGroup() == group);   //true
+        System.out.println(Thread.currentThread().getThreadGroup() == group);   //false
+        
+    }
+}
+</code></pre>
+
+<h2>五、Thread与Runnable的区别</h2>
+
+<p>二者看似都可以创建线程，但是二者其实是有区别的，区别就是Thread负责线程本身相关职责和控制，Runnable负责线程逻辑执行单元部分。上述例子已经很好的说明了这一点。</p>
 </article>
                 <section class="author" style="font-family:NSimSun">
                     <div class="avatar" style="background-image: url(https://cdn.nlark.com/yuque/0/2019/png/257195/1555147780483-avatar/550c911e-e363-49b7-8d65-21edddf99a07.png?x-oss-process=image/resize,m_fill,w_192,h_192/format,png);"></div>
@@ -115,13 +237,13 @@
                     
                     <section class="nav prev more">
                         <div class="head">上篇文章</div>
-                        <a class="link" href="/a-domestic-masterpiece-of-conscientious-suspicious-reasoning.html">《清明上河图密码》一部良心的国产悬疑推理大作</a>
+                        <a class="link" href="/thread-api-detailed-introduction.html">Thread API详细介绍</a>
                     </section>
                     
                     
                     <section class="nav next more">
                         <div class="head">下篇文章</div>
-                        <a class="link" href="/love-reminiscences.html">诉衷情</a>
+                        <a class="link" href="/sharing-variables-and-synchronized-keyword-among-threads-to-solve-thread-insecurity.html">线程间共享变量与synchronized关键字解决线程不安全问题</a>
                     </section>
                     
                 </section>
