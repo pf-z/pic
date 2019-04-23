@@ -44,6 +44,28 @@
     var root = '';
 </script>
 
+<script type="text/javascript">
+    var conn, reloadTimer, connectTimer;
+    var connect = function() {
+        conn = new WebSocket('ws://' + location.host + '/live');
+        conn.onmessage = function(event) {
+            if (event.data === 'change') {
+                if (reloadTimer) clearTimeout(reloadTimer);
+                reloadTimer = setTimeout(function() {
+                    window.location.reload();
+                }, 200);
+            }
+        };
+        conn.onclose = function() {
+            if (connectTimer) clearTimeout(connectTimer);
+            connectTimer = setTimeout(function() {
+                connect();
+            }, 1000);
+        };
+    };
+    connect();
+</script>
+
 
         <meta name="keywords" content="">
         <meta name="description" content="">
@@ -187,14 +209,4 @@
         </article>
         <footer class="footer" style="font-family:NSimSun">
     <span class="copyright">
-        Feily Zhang (c)
-        <script type="text/javascript">
-            document.write(new Date().getFullYear());
-        </script>
-    </span>
-    <span class="publish">Powered by <a href="http://www.chole.io/" target="_blank">Ink</a></span>
-</footer>
-
-    </body>
-    <script src="/bundle/index.js"></script>
-</html>
+        Feily Zhang 
