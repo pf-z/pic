@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom">
   <title>Feily Zhang</title>
   <id>https://feily.tech</id>
-  <updated>2019-07-03T20:41:04+08:00</updated>
+  <updated>2019-07-03T21:39:45+08:00</updated>
   <subtitle>昨夜星辰昨夜风，画楼西畔桂堂东</subtitle>
   <link href="https://feily.tech"></link>
   <author>
     <name>Feily Zhang</name>
   </author>
+  <entry>
+    <title>计算机操作系统原理总结</title>
+    <updated>2019-07-03T20:58:14+08:00</updated>
+    <id>tag:feily.tech,2019-07-03:/principle-basis-of-operating-system.html</id>
+    <content type="html">&lt;p&gt;Java研发应该掌握的计算机操作系统知识。&lt;/p&gt;&#xA;</content>
+    <link href="https://feily.tech/principle-basis-of-operating-system.html"></link>
+    <author>
+      <name>林奕清</name>
+    </author>
+  </entry>
   <entry>
     <title>Spring中Bean的配置方式</title>
     <updated>2019-05-19T16:01:14+08:00</updated>
@@ -93,16 +103,6 @@
     <id>tag:feily.tech,2019-04-19:/jvm-class-loader.html</id>
     <content type="html">&lt;p&gt;类加载器的职责就是负责类的加载，对于任意一个class，都需要由加载它的类加载器和这个类本身确立其在JVM中的唯一性，这也就是运行时包。&lt;/p&gt;&#xA;</content>
     <link href="https://feily.tech/jvm-class-loader.html"></link>
-    <author>
-      <name>林奕清</name>
-    </author>
-  </entry>
-  <entry>
-    <title>类的加载过程</title>
-    <updated>2019-04-18T20:50:25+08:00</updated>
-    <id>tag:feily.tech,2019-04-18:/class-loading-process.html</id>
-    <content type="html">&lt;p&gt;ClassLoader的主要职责就是负责加载各种class文件到JVM中，ClassLoader是一个抽象的class，给定一个class的二进制文件名，ClassLoader会尝试加载并且在JVM中生成构成这个类的各个数据结构，然后使其分布在JVM对应的内存区域中。&lt;/p&gt;&#xA;</content>
-    <link href="https://feily.tech/class-loading-process.html"></link>
     <author>
       <name>林奕清</name>
     </author>
