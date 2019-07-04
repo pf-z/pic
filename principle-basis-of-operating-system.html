@@ -46,9 +46,9 @@
 
 
         <meta name="keywords" content="OS,">
-        <meta name="description" content="计算机操作系统原理总结">
+        <meta name="description" content="计算机操作系统原理总结(一)——处理器管理">
         <meta name="author" content="林奕清">
-        <title>计算机操作系统原理总结</title>
+        <title>计算机操作系统原理总结(一)——处理器管理</title>
     </head>
     <body>
         <article class="container">
@@ -65,7 +65,7 @@
 </header>
 
             <article class="main article">
-                <h1 class="title" style="font-family:KaiTi">计算机操作系统原理总结</h1>
+                <h1 class="title" style="font-family:KaiTi">计算机操作系统原理总结(一)——处理器管理</h1>
                 <section class="info" style="font-family:KaiTi">
                     <span class="avatar" style="background-image: url(https://cdn.nlark.com/yuque/0/2019/png/257195/1562157551682-avatar/dce920e8-dc39-4157-9c42-99d23f827fc4.png?x-oss-process=image/resize,m_fill,w_192,h_192/format,png);"></span>
                     <a class="name" href="/about.me.html">林奕清</a>
@@ -313,6 +313,146 @@ coend
 </ol>
 
 <p>算法分析如下：</p>
+
+<ol>
+<li>互斥信号量writeblock：用于Reader与Writer、Writer与Writer之间的互斥，初值为1；</li>
+<li>readcount：登记正在读的进程的数目，初值为0；</li>
+<li>互斥信号量mutex：用于Reader与Reader互斥访问整型量readcount，初值为1；</li>
+</ol>
+
+<p>readcount情况分析：</p>
+
+<ol>
+<li>如果readcount为0，则可能有也可能没有写者在写；</li>
+<li>如果读者数目readcount不为0，则不会有写者在写，请求读的读者可以进行读操作；</li>
+<li>如果读者数目readcount为0，又没有写者在写，则请求写的写者才可以进行写操作。</li>
+</ol>
+
+<p>算法描述如下：</p>
+
+<pre><code>int readcount = 0;
+semaphore writeblock, mutex;
+writeblock = 1;
+mutex = 1;
+cobegin
+process reader_i() {
+    P(mutex);    // 互斥操作，开始
+    readcount++;    // 由于是读操作，所以读进程数量加一
+    if (readcount == 1) P(writeblock);    // 如果读进程数量为1，即不为1，那么说明不会有写者在写，所以没必要加信号量，即下一步执行互斥信号量的V操作
+    V(mutex);    // 执行mutex的V操作
+    {具体读文件操作};    // 然后进行具体的读操作
+    P(mutex);    // 对共享变量readcount操作需要加信号量，因为每次读进程操作都会修改这个值，上面的代码也是同理
+    readcount--;    // 文件读完之后读进程数量减一
+    if(readcount == 0) V(writeblock);    // 如果减一后值为0，且当前进程是读者进程说明没有写者在写，所以执行writeblock的V操作，释放一个写者进程进行写操作
+    V(mutex);    // 互斥信号量成对出现，所以必须执行V操作
+}
+
+// 由于读操作没有涉及共享变量readcount，所以不用为共享变量readcount加信号量
+process writer_j() {
+    P(writeblock);    // 写进程执行写操作，需要向信号量申请，即执行P操作（信号量writeblock代表资源数目，不管是互斥信号量还是一般信号量都可以理解为资源数目）
+    {具体写文件操作};    // 申请到了，执行具体的写操作
+    V(writeblock);    // 写完后释放占用的资源，供其余进程申请
+}
+coend
+</code></pre>
+
+<h4>5.4 睡眠理发师问题</h4>
+
+<p>问题描述：理发店有一位理发师、一把理发椅和n把椅子供顾客等候理发休息。如果没有顾客，理发师便在理发椅上睡觉。某位顾客到来时，该顾客必须叫醒理发师。如果理发师正在理发时又有顾客到来，则如果有空椅子可坐，顾客就坐下来等待，否则离开。</p>
+
+<p>算法描述如下：</p>
+
+<pre><code>int waiting = 0;    // 等待的顾客数目，为共享变量
+int CHAIRS = N;    // 为顾客准备的椅子数目
+semaphore customers, barbers, mutex;
+customers = 0, barbers = 0, mutex = 1;
+cobegin
+process barber() {
+    while (true) {
+        P(customers);    // 申请顾客（相当于加锁），如果没有顾客即申请不到，那么就阻塞即睡眠，不会再往下执行
+        P(mutex);    // 理发师要对共享变量操作，所以必须申请保护
+        waiting--;    // 理发一位，减一
+        V(barbers);    // 已经理发完了，所以解除理发师资源的占用，也就是可以为下一个理发了
+        V(mutex);    // 对共享变量的操作完毕，释放信号量占用
+        cut_hair();
+    }
+}
+
+process customer_i() {
+    P(mutex);    // 因为涉及对共享变量waiting的操作，所以需要申请资源，以便临界区保护
+    if (waiting &lt; CHAIRS) {    // 如果椅子没有坐满，那么就继续执行
+        waiting++;    // 等待的人数目加一
+        V(customers);    // 对代表顾客资源数目的信号量加一，代表多了一个顾客
+        V(mutex);    // 对临界区资源操作完毕，可以释放信号量
+        P(barbers);    // 顾客申请理发师，即执行P操作，如果申请不到则坐下来（阻塞），否则就理发
+        get_haircut();
+    } else V(mutex);    // 如果椅子满了，什么也不做（离开）
+}
+coend
+</code></pre>
+
+<h2>六、进程通信</h2>
+
+<ul>
+<li>共享变量</li>
+<li>共享内存</li>
+<li>消息传递通信机制</li>
+<li>套接字通信机制：不同主机的进程实现通信的方式；</li>
+<li>管道：是连接进程的一个共享文件，允许进程以先进先出的方式写入和读出数据，并对读写操作进行同步。</li>
+</ul>
+
+<h2>七、死锁</h2>
+
+<h4>7.1 死锁产生的必要条件</h4>
+
+<ol>
+<li>互斥条件：进程互斥使用资源，一旦某个资源被占用，则要使用该资源的进程必须等待；</li>
+<li>占有和等待条件：进程申请新资源得不到满足而等待时，不释放已占用资源；</li>
+<li>不剥夺条件：一个进程不能抢占其他进程占有的资源；</li>
+<li>循环等待条件：存在一组进程循环等待资源的现象。</li>
+</ol>
+
+<h4>7.2 死锁防止</h4>
+
+<p>只需要破坏上述条件即可，如下</p>
+
+<ol>
+<li>破坏互斥条件：破坏互斥条件使资源可同时访问而不是互斥使用，对于进程同步来说，该条件不能破坏反而要加以保证；</li>
+<li>破坏占有和等待条件：通过静态分配可以实现。静态分配指的是一个进程必须在执行前申请它所需要的全部资源，并且直到它需要的资源都得到满足后才开始执行；</li>
+<li>破坏不剥夺条件：当进程在申请资源未得到的情况下，主动释放资源，然后去等待；</li>
+<li>破坏循环等待条件：采用层次分配策略可以实现。层次分配策略指的是将资源分成多个层次，当进程得到某一层的某个资源后，它只能申请较高层次的资源。当进程要释放某层次的资源时，必须先释放占有的较高层次的资源。当进程得到某一层的一个资源后，它想申请该层的另一个资源时，必须先释放该层中的已占有资源。</li>
+</ol>
+
+<h4>7.3 银行家算法的基本思想</h4>
+
+<ol>
+<li>每个客户必须预先说明自己要求的最大资金量；</li>
+<li>每个客户每次提出部分资金量申请和获得分配；</li>
+<li>如果银行满足了客户对资金的最大需求量，则客户在资金运作后一定可以很快归还资金。。</li>
+</ol>
+
+<p>采用银行家算法思想考虑死锁问题时，操作系统对应银行家，操作系统管理的资源对应周转资金，进程对应要求贷款的客户。</p>
+
+<p>银行家算法的缺点是，很难在运行前知道其所需的最大资源量，而且算法要求系统中的进程必须是无关的，相互间没有同步要求，进程的个数和分配的资源数目应该是固定的。这些要求事先难以满足，因此该算法缺乏实用价值。</p>
+
+<h4>7.4 死锁的检测与解除</h4>
+
+<p>解决死锁问题的一个途径是死锁的检测与解除，这种方法对资源的分配不加任何限制，也不采取死锁避免措施（即不采取上述四个破坏条件），但系统定时运行一个“死锁检测程序”，判断系统内是否出现死锁，如果出现，则采取措施解除它。</p>
+
+<p>死锁的解除方法如下</p>
+
+<ol>
+<li>立即结束所有进程的执行，并重启操作系统；</li>
+<li>剥夺陷于死锁的进程占用的资源，但不撤销它，直到死锁解除；</li>
+<li>撤销陷于死锁的所有进程，解除死锁以继续运行；</li>
+<li>逐个撤销陷于死锁的进程，回收其资源，直至死锁解除；</li>
+<li>根据系统保存的检查点，使所有进程回退，直到足以解除死锁；</li>
+<li>当检测到死锁时，如果存在某些未卷入死锁的进程，而这些进程随着建立一些新的抑制进程能执行到结束，则它们可能释放足够的资源来解除死锁。</li>
+</ol>
+
+<blockquote>
+<p>参考《操作系统原理与Linux实践教程》 / 申丰山 王黎明 编著</p>
+</blockquote>
 </article>
                 <section class="author" style="font-family:NSimSun">
                     <div class="avatar" style="background-image: url(https://cdn.nlark.com/yuque/0/2019/png/257195/1562157551682-avatar/dce920e8-dc39-4157-9c42-99d23f827fc4.png?x-oss-process=image/resize,m_fill,w_192,h_192/format,png);"></div>

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom">
   <title>Feily Zhang</title>
   <id>https://feily.tech</id>
-  <updated>2019-07-04T16:49:14+08:00</updated>
+  <updated>2019-07-04T22:43:49+08:00</updated>
   <subtitle>昨夜星辰昨夜风，画楼西畔桂堂东</subtitle>
   <link href="https://feily.tech"></link>
   <author>
     <name>Feily Zhang</name>
   </author>
   <entry>
-    <title>计算机操作系统原理总结</title>
+    <title>计算机操作系统原理总结(一)——处理器管理</title>
     <updated>2019-07-03T20:58:14+08:00</updated>
     <id>tag:feily.tech,2019-07-03:/principle-basis-of-operating-system.html</id>
-    <content type="html">&lt;p&gt;Java研发应该掌握的计算机操作系统知识。&lt;/p&gt;&#xA;</content>
+    <content type="html">&lt;p&gt;进程的定义、特征、模型；进程控制块（PCB）的作用、信息及组织方式；进程的控制；进程对临界资源访问的互斥性与进程间的同步；利用信号量实现同步示例；进程通信；死锁。&lt;/p&gt;&#xA;</content>
     <link href="https://feily.tech/principle-basis-of-operating-system.html"></link>
     <author>
       <name>林奕清</name>
