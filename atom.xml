@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom">
   <title>Feily Zhang</title>
   <id>https://feily.tech</id>
-  <updated>2019-07-04T22:43:49+08:00</updated>
+  <updated>2019-07-05T16:39:38+08:00</updated>
   <subtitle>昨夜星辰昨夜风，画楼西畔桂堂东</subtitle>
   <link href="https://feily.tech"></link>
   <author>
     <name>Feily Zhang</name>
   </author>
+  <entry>
+    <title>深入理解计算机网络</title>
+    <updated>2019-07-05T15:27:14+08:00</updated>
+    <id>tag:feily.tech,2019-07-05:/deep-understanding-of-computer-networks.html</id>
+    <content type="html">&lt;p&gt;进程的定义、特征、模型；进程控制块（PCB）的作用、信息及组织方式；进程的控制；进程对临界资源访问的互斥性与进程间的同步；利用信号量实现同步示例；进程通信；死锁。&lt;/p&gt;&#xA;</content>
+    <link href="https://feily.tech/deep-understanding-of-computer-networks.html"></link>
+    <author>
+      <name>林奕清</name>
+    </author>
+  </entry>
   <entry>
     <title>计算机操作系统原理总结(一)——处理器管理</title>
     <updated>2019-07-03T20:58:14+08:00</updated>
@@ -93,16 +103,6 @@
     <id>tag:feily.tech,2019-04-20:/design-of-seven-kinds-of-singleton-patterns.html</id>
     <content type="html">&lt;p&gt;单例模式提供了一种在多线程情况下保证实例唯一性的解决方案，单例模式设计的标准是：懒加载、高性能、线程安全。&lt;/p&gt;&#xA;</content>
     <link href="https://feily.tech/design-of-seven-kinds-of-singleton-patterns.html"></link>
-    <author>
-      <name>林奕清</name>
-    </author>
-  </entry>
-  <entry>
-    <title>JVM类加载器</title>
-    <updated>2019-04-19T19:00:25+08:00</updated>
-    <id>tag:feily.tech,2019-04-19:/jvm-class-loader.html</id>
-    <content type="html">&lt;p&gt;类加载器的职责就是负责类的加载，对于任意一个class，都需要由加载它的类加载器和这个类本身确立其在JVM中的唯一性，这也就是运行时包。&lt;/p&gt;&#xA;</content>
-    <link href="https://feily.tech/jvm-class-loader.html"></link>
     <author>
       <name>林奕清</name>
     </author>
