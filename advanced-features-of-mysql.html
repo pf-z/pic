@@ -205,7 +205,7 @@ query_cache_limit = 2000000
 
 <h2>三、事务控制</h2>
 
-<p>默认情况下，MySQL事务是自动提交的，如果需要通过明确的COMMIT和ROLLBACK再提交和回滚事务，就需要通过明确的事务控制来开始事务。MySQL的默认开启的事务在一定程度上影响性能，比如1000条数据提交会提交事务1000次，事实上手动开启事务只需要一次提交即可。通过如下方式关闭事务自动提交功能</p>
+<p>事务通常包含一系列更新操作，这些更新操作是一个不可分割的逻辑工作单元。要么全部成功，要么全部失败。默认情况下，MySQL事务是自动提交的，如果需要通过明确的COMMIT和ROLLBACK再提交和回滚事务，就需要通过明确的事务控制来开始事务。MySQL的默认开启的事务在一定程度上影响性能，比如1000条数据提交会提交事务1000次，事实上手动开启事务只需要一次提交即可。通过如下方式关闭事务自动提交功能</p>
 
 <pre><code>set @@autocommit=0;
 </code></pre>
@@ -231,6 +231,15 @@ query_cache_limit = 2000000
 </code></pre>
 
 <p>如果在表的锁定期间，使用<code>start transaction</code>命令开启一个新的事务，会造成一个隐含的<code>unlock tables</code>被执行，该操作存在一定的隐患。</p>
+
+<p>另外，事务的ACID特性如下：</p>
+
+<ul>
+<li>原子性（Atomicity）：事务具有原子不可分割的特性，要么一起执行，要么都不执行；</li>
+<li>一致性（Consistency）：在事务开始和事务结束时，数据都保持一致状态；</li>
+<li>隔离性（Isolation）：在事务开始和结束过程中，事务保持着一定的隔离特性，保证事务在不受外部并发数据操作的影响；</li>
+<li>持久性（Durability）：事务完成后，数据将会被持久化到数据库中。</li>
+</ul>
 </article>
                 <section class="author" style="font-family:NSimSun">
                     <div class="avatar" style="background-image: url(https://cdn.nlark.com/yuque/0/2019/png/257195/1562157551682-avatar/dce920e8-dc39-4157-9c42-99d23f827fc4.png?x-oss-process=image/resize,m_fill,w_192,h_192/format,png);"></div>
@@ -242,7 +251,7 @@ query_cache_limit = 2000000
                     
                     <section class="nav next">
                         <div class="head">下篇文章</div>
-                        <a class="link" href="/principle-basis-of-operating-system-another.html">计算机操作系统原理总结(二)——存储管理</a>
+                        <a class="link" href="/mysql-locking-mechanism.html">MySQL锁定机制</a>
                     </section>
                     
                 </section>
