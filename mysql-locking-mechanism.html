@@ -70,7 +70,7 @@
                     <span class="avatar" style="background-image: url(https://cdn.nlark.com/yuque/0/2019/png/257195/1562157551682-avatar/dce920e8-dc39-4157-9c42-99d23f827fc4.png?x-oss-process=image/resize,m_fill,w_192,h_192/format,png);"></span>
                     <a class="name" href="/about.me.html">林奕清</a>
                     
-                    <span class="date" data-time="1562378414"><span class="from"></span></span>
+                    <span class="date" data-time="1562382014"><span class="from"></span></span>
                     
                     <span class="tags">MySQL</span>
                 </section>
@@ -230,7 +230,107 @@ unlock tables;
 
 <p><strong>可见，事务的隔离级别越严格，并发的副作用就小，但付出的代价越大。</strong></p>
 
-<p>事务与并发总结：事务安全是在并发中出现的，没有并发就不会产生事务安全。MyISAM不支持事务即不支持一系列不可分割的更新操作组成的逻辑工作单元，所以就不会产生事务安全问题。但是InnoDB支持事务操作，那么就会存在上述事务安全问题。为了解决上述事务安全问题，必须首先关闭MySQL自动提交（因为自动提交会使得每一条更新语句被执行从而数据被持久化），然后执行一系列更新语句组成的逻辑工作单元后再显式提交事务（<code>commit</code>），出问题还可以回滚（<code>rollback</code>）。也可以不关闭自动提交，直接显式开启事务（<code>start transaction</code>）即可也是同样的效果。这是一个session/进程/线程对自己事务的处理方式从而保证自己的一系列操作是完整的，但是高并发环境下，进程/线程之间各自事务的安全性保证则要通过事务的隔离级别来实现。同样的，并发操作必须加锁。即线程/进程的原子事务的子操作必须加锁保证对某一条记录的修改是独占的，进程/线程之间的事务安全通过隔离级别来保证。</p>
+<p><strong>事务与并发总结：事务安全是在并发中出现的，没有并发就不会产生事务安全。MyISAM不支持事务即不支持一系列不可分割的更新操作组成的逻辑工作单元，所以就不会产生事务安全问题。但是InnoDB支持事务操作，那么就会存在上述事务安全问题。为了解决上述事务安全问题，必须首先关闭MySQL自动提交（因为自动提交会使得每一条更新语句被执行从而数据被持久化），然后执行一系列更新语句组成的逻辑工作单元后再显式提交事务（<code>commit</code>），出问题还可以回滚（<code>rollback</code>）。也可以不关闭自动提交，直接显式开启事务（<code>start transaction</code>）即可也是同样的效果。这是一个session/进程/线程对自己事务的处理方式从而保证自己的一系列操作是完整的，但是高并发环境下，进程/线程之间各自事务的安全性保证则要通过事务的隔离级别来实现。同样的，并发操作必须加锁。即线程/进程的原子事务的子操作必须加锁保证对某一条记录的修改是独占的，进程/线程之间的事务安全通过隔离级别来保证。</strong></p>
+
+<h4>3.2 InnoDB行级锁模式、事务下共享锁与排它锁的使用流程</h4>
+
+<table>
+<thead>
+<tr>
+<th align="center">锁模式</th>
+<th align="center">共享锁（S）</th>
+<th align="center">排它锁（X）</th>
+<th align="center">意向共享锁（IS）</th>
+<th align="center">意向排它锁（IX）</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center">共享锁（S）</td>
+<td align="center">兼容</td>
+<td align="center">冲突</td>
+<td align="center">兼容</td>
+<td align="center">冲突</td>
+</tr>
+
+<tr>
+<td align="center">排它锁（X）</td>
+<td align="center">冲突</td>
+<td align="center">冲突</td>
+<td align="center">冲突</td>
+<td align="center">冲突</td>
+</tr>
+
+<tr>
+<td align="center">意向共享锁（IS）</td>
+<td align="center">兼容</td>
+<td align="center">冲突</td>
+<td align="center">兼容</td>
+<td align="center">兼容</td>
+</tr>
+
+<tr>
+<td align="center">意向排它锁（IX）</td>
+<td align="center">冲突</td>
+<td align="center">冲突</td>
+<td align="center">兼容</td>
+<td align="center">兼容</td>
+</tr>
+</tbody>
+</table>
+
+<p>各个锁的含义如下：</p>
+
+<ul>
+<li>共享锁（S）：允许一个事务读一行数据时，阻止其他的事务读取相同数据的排它锁；</li>
+<li>排它锁（X）：允许获得排它锁的事务更新数据，阻止其他事务取得相同数据的共享锁和排它锁；</li>
+<li>意向共享锁（IS）：事务打算给数据行加行共享锁。事务在给一个数据行加共享锁前必须先取得该表的IS锁；</li>
+<li>意向排它锁（IX）：事务打算给数据行加行排它锁，事务在给一个数据行加排它锁前必须先取得该表的IX锁。</li>
+</ul>
+
+<p>如果一个事务请求的锁模式与当前的锁模式兼容，InnoDB就将请求的锁授予该事务，如果两者不兼容，那么该事务就要等待锁释放。</p>
+
+<p>意向锁是InnoDB存储引擎自动加的，对于普通的SELECT语句，InnoDB不会加任何锁，对于INSERT、UPDATE、DELETE语句，InnoDB会自动给涉及的数据加排它锁，InnoDB可以通过如下语句添加共享锁（S）与排它锁（X）：</p>
+
+<pre><code>SQL语句 LOCK IN SHARE MODE;
+
+SQL语句 FOR UPDATE；
+</code></pre>
+
+<p>使用InnoDB共享锁与排它锁必须满足以下几个条件：</p>
+
+<ol>
+<li>设置autocommit的值是OFF或；</li>
+<li>表的数据引擎是支持事务的，比如InnoDB数据引擎；</li>
+<li>如果不管autocommit，手段在事务里执行操作，这个时候要使用begin或者start transaction开启事务；</li>
+<li>不要在锁定事务规定的时间外使用共享锁和排它锁。</li>
+</ol>
+
+<p>之所以有上述四个条件是因为InnoDB是支持事务的，而InnoDB又是自动提交的，这和事务一次性提交不符，所以先要关闭事务自动提交，或者直接使用start transaction开启事务，执行完事务中的SQL语句后再提交(commit)。</p>
+
+<p>以上条件也是InnoDB存储引擎在支持事务的情况下的获取共享锁或排它锁实现数据操纵的流程。</p>
+
+<p><strong>需要注意的是，InnoDB行级锁是通过给索引上的索引项加锁来实现的，InnoDB行级锁只有通过索引条件检索数据，才使用行级锁，否则使用表级锁。</strong></p>
+
+<h4>3.3 InnoDB在不同隔离级别下加锁的差异</h4>
+
+<p>在不同隔离级别下，InnoDB处理SQL语句时所采用的一致性和需要的锁是不同的。</p>
+
+<p>对于SQL语句而言，隔离级别越高，InnoDB存储引擎给记录添加的锁就越严格，产生锁冲突的可能性就越高（因为高隔离级别是保证了某一个事务的整体完整性，因此其余事务就会产生锁等待），对并发的性能影响就越大。因此，应该尽量使用较低的隔离级别，以降低并发中的锁争用的几率。</p>
+
+<p>对于一些需要使用较高隔离级别的情况，可以通过如下操作更换隔离级别：</p>
+
+<pre><code>set session transaction isolation level repeatable read;
+
+set session transaction isolation level serializable;
+</code></pre>
+
+<h4>3.4 间隙锁（Net-Key锁）</h4>
+
+<p>在更新InnoDB存储引擎表中的某个区间数据时，将会锁定这个区间的所有记录，即使这个区间中的某条记录不存在，该条记录也会被锁住，这个时候，如果另外一个session往这个表中添加一条记录时，此时必须等到上一个事务释放锁资源。</p>
+
+<p>InnoDB使用间隙锁的目的，一方面是为了防止幻读，如果没有加间隙锁，如果其他事务添加某个区间的某条记录，那么就会发生幻读；另一方面，是为了满足其恢复和赋值的需求。</p>
 </article>
                 <section class="author" style="font-family:NSimSun">
                     <div class="avatar" style="background-image: url(https://cdn.nlark.com/yuque/0/2019/png/257195/1562157551682-avatar/dce920e8-dc39-4157-9c42-99d23f827fc4.png?x-oss-process=image/resize,m_fill,w_192,h_192/format,png);"></div>
@@ -239,15 +339,10 @@ unlock tables;
                 </section>
                 <section class="recommend" style="font-family:KaiTi">
                     
-                    <section class="nav prev more">
-                        <div class="head">上篇文章</div>
-                        <a class="link" href="/advanced-features-of-mysql.html">MySQL的高级特性</a>
-                    </section>
                     
-                    
-                    <section class="nav next more">
+                    <section class="nav next">
                         <div class="head">下篇文章</div>
-                        <a class="link" href="/principle-basis-of-operating-system-another.html">计算机操作系统原理总结(二)——存储管理</a>
+                        <a class="link" href="/advanced-features-of-mysql.html">MySQL的高级特性</a>
                     </section>
                     
                 </section>
