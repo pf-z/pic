@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom">
   <title>Feily Zhang</title>
   <id>https://feily.tech</id>
-  <updated>2019-07-07T11:40:40+08:00</updated>
+  <updated>2019-07-13T15:45:00+08:00</updated>
   <subtitle>昨夜星辰昨夜风，画楼西畔桂堂东</subtitle>
   <link href="https://feily.tech"></link>
   <author>
     <name>Feily Zhang</name>
   </author>
+  <entry>
+    <title>Spring IoC容器的接口与实现类</title>
+    <updated>2019-07-13T14:43:49+08:00</updated>
+    <id>tag:feily.tech,2019-07-13:/interface-and-implementation-class-of-spring-ioc-container.html</id>
+    <content type="html">&lt;p&gt;Spring通过IoC(控制反转)来管理对象间的依赖关系。Spring的IoC容器是一个轻量级容器，没有侵入性，不需要依赖容器的API，也不需要实现一些特殊的接口。&lt;/p&gt;&#xA;</content>
+    <link href="https://feily.tech/interface-and-implementation-class-of-spring-ioc-container.html"></link>
+    <author>
+      <name>林奕清</name>
+    </author>
+  </entry>
   <entry>
     <title>Redis数据结构</title>
     <updated>2019-07-07T09:53:49+08:00</updated>
@@ -93,16 +103,6 @@
     <id>tag:feily.tech,2019-05-19:/configuration-of-beans-in-spring.html</id>
     <content type="html">&lt;p&gt;Spring中的Bean配置方式，包含类-xml配置、注解-xml配置、注解-配置类配置。&lt;/p&gt;&#xA;</content>
     <link href="https://feily.tech/configuration-of-beans-in-spring.html"></link>
-    <author>
-      <name>林奕清</name>
-    </author>
-  </entry>
-  <entry>
-    <title>垃圾收集器与内存分配策略</title>
-    <updated>2019-04-25T10:31:14+08:00</updated>
-    <id>tag:feily.tech,2019-04-25:/garbage-collector-and-memory-allocation-strategy.html</id>
-    <content type="html">&lt;p&gt;堆中几乎存放着Java中的所有对象实例，垃圾收集器在对堆进行回收前，要做的一件事情就是判断这些对象有哪些还“或者”，哪些已经“死去（即不可能再被任何途径使用的对象）”。然后对死去的对象进行垃圾清理完成内存回收。&lt;/p&gt;&#xA;</content>
-    <link href="https://feily.tech/garbage-collector-and-memory-allocation-strategy.html"></link>
     <author>
       <name>林奕清</name>
     </author>
