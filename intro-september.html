@@ -45,10 +45,10 @@
 </script>
 
 
-        <meta name="keywords" content="Java Core,">
-        <meta name="description" content="对前面多线程基础的总结">
+        <meta name="keywords" content="C&#43;&#43;,">
+        <meta name="description" content="依题源组卷工具September使用极简指南">
         <meta name="author" content="林奕清">
-        <title>对前面多线程基础的总结</title>
+        <title>依题源组卷工具September使用极简指南</title>
     </head>
     <body>
         <article class="container">
@@ -65,38 +65,59 @@
 </header>
 
             <article class="main article">
-                <h1 class="title" style="font-family:KaiTi">对前面多线程基础的总结</h1>
+                <h1 class="title" style="font-family:KaiTi">依题源组卷工具September使用极简指南</h1>
                 <section class="info" style="font-family:KaiTi">
                     <span class="avatar" style="background-image: url(https://cdn.nlark.com/yuque/0/2019/png/257195/1562157551682-avatar/dce920e8-dc39-4157-9c42-99d23f827fc4.png?x-oss-process=image/resize,m_fill,w_192,h_192/format,png);"></span>
                     <a class="name" href="/about.me.html">林奕清</a>
                     
-                    <span class="date" data-time="1545387765"><span class="from"></span></span>
+                    <span class="date" data-time="1567865802"><span class="from"></span></span>
                     
-                    <span class="tags">Java Core</span>
+                    <span class="tags">C&#43;&#43;</span>
                 </section>
-                <article class="content" style="font-family:KaiTi"><p>对共享变量的操作有三种方式：</p>
+                <article class="content" style="font-family:KaiTi"><h2>一、September是什么？</h2>
+
+<p>September是一款依题源组卷工具，基于题源随机组卷，理论上只要样本容量足够大，可以生成互不重复的试题。</p>
+
+<p>为什么叫September？好吧，这个名字很随意，原因就是这个工具是我在九月份写出来的！！！姑且这样吧。</p>
+
+<h2>二、使用方式</h2>
+
+<p>该工具运行需要Java运行时环境，因此，需要确保你的PC机安装了<code>JRE</code>，需要根据你的PC机的位数下载合适的<code>JRE</code>，并配置<code>环境变量</code>，这个网上有很多，此处跳过。</p>
+
+<p>前往<a href="http://ibiur610399.java.jkj.wang/September.rar">此处</a> 下载rar压缩包并解压至某个位置，接下来你有三种方式使用该工具，这里只介绍两种：</p>
 
 <ul>
-<li>多线程不同runnable实例类变量实现，通过类变量实现多线程对不同runnable实例间共享变量的操作</li>
-<li>多线程相同runnable实例成员变量实现，通过相同runnable实例实现多线程对共享变量的操作</li>
-<li>多线程相同类实例成员变量实现，通过相同类实例多线程调用类实例方法实现多线程对共享变量的操作</li>
+<li>第一种方法是，直接点击<code>September.BAT</code>批处理程序，即可；</li>
+<li>第二种方法是，将解压的文件夹加入到windows环境变量，具体操作方式如下：计算机 <span>-&gt;</span> 属性 <span>-&gt;</span> 高级系统设置 <span>-&gt;</span> 高级 <span>-&gt;</span> 环境变量 <span>-&gt;</span> 找到系统变量的path变量插入本文件夹路径即可。然后在<code>cmd</code>中输入命令<code>september</code>即可进入幻境。</li>
 </ul>
 
-<p>但是对共享变量的操作会存在线程安全问题，通过加锁可以解决，那么线程安全的对共享变量的操作三种方式如下</p>
+<h2>三、文件结构</h2>
 
-<ul>
-<li>多线程不同runnable实例类变量实现，通过类变量实现多线程对不同runnable实例间共享变量的操作，加锁实现线程安全</li>
-<li>多线程相同runnable实例成员变量实现，通过相同runnable实例实现多线程对共享变量的操作，加锁实现线程安全</li>
-<li>多线程相同类实例成员变量实现，通过相同类实例多线程调用类实例方法实现多线程对共享变量的操作，加锁实现线程安全</li>
-</ul>
+<p>示例如下</p>
 
-<p>以上涉及的是多线程对共享变量的同类型操作，不会涉及到线程间的通信，如果是多线程对共享变量的不同类型的操作，那么就要涉及到线程间的通信，比如典型的生产者与消费者问题，生产队列为空那么就无法消费，生产队列为满，那么无法生产。</p>
+<pre><code>!5
+2 C++类声明与定义，析构函数与this指针
+4 深入C++函数
+6 函数关于指针
+5 C++自定义数据类型
+3 C++中的预定义数据类型
+7 Redis设计与实现
+9 MySQL忘记root密码解决办法
+2 Spring MVC控制器使用详情
+1 Spring MVC控制器使用指南
+5 Spring AOP的XML实现方式
+7 Spring依赖注入的实现方式
+5 懒惰学习——K最近邻学习算法
+4 物以类聚——K均值聚类学习算法
+2 转导推理——支持向量机
+6 黑箱方法——人工神经网络
+2 分而治之——决策树学习算法
+5 地图着色问题
+</code></pre>
 
-<p>假定有两个线程，分别是生产线程与消费线程，那么二者就需要通信，用第三种对共享变量操作的方法更好，共享变量就是队列，通过将操作抽象为一个共享成员与两个队共享成员操作的方法，分别是生产与消费，那么生产者线程与消费者线程分别使用相同的类实例，一个调用生产方法，一个调用消费方法即可</p>
+<p>第一行为一个英文感叹号，其后直接跟一个数字，该数字为题目的行数偏移量。</p>
 
-<p>如果生产者有多个线程，那么也需要调度，notifyAll与while、wait。</p>
-
-<p>如果多线程不涉及对共享资源的操作，那么就不存在线程安全问题，可能也不需要通信，但是如果线程间有依赖关系(比如生产者消费者问题)，那么必然需要线程间通信(调度)，通过Thread的相关API调度，一个线程阻塞另一个线程运行并相互通知，那么肯定是第三种方法更好。</p>
+<p>暂时写这么多，要睡觉了&hellip;&hellip;</p>
 </article>
                 <section class="author" style="font-family:NSimSun">
                     <div class="avatar" style="background-image: url(https://cdn.nlark.com/yuque/0/2019/png/257195/1562157551682-avatar/dce920e8-dc39-4157-9c42-99d23f827fc4.png?x-oss-process=image/resize,m_fill,w_192,h_192/format,png);"></div>
@@ -105,15 +126,10 @@
                 </section>
                 <section class="recommend" style="font-family:KaiTi">
                     
-                    <section class="nav prev more">
-                        <div class="head">上篇文章</div>
-                        <a class="link" href="/cache-model-and-java-memory-model-and-volatile-keyword.html">Cache模型与Java内存模型及volatile关键字</a>
-                    </section>
                     
-                    
-                    <section class="nav next more">
+                    <section class="nav next">
                         <div class="head">下篇文章</div>
-                        <a class="link" href="/capturing-thread-runtime-exception-information-and-injecting-hook-threads.html">捕获线程运行时异常信息与注入钩子线程</a>
+                        <a class="link" href="/cpp-class-declaration-and-definition-destructor-and-this-pointer.html">C&#43;&#43;类声明与定义，析构函数与this指针</a>
                     </section>
                     
                 </section>
